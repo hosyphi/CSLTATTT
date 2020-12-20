@@ -1,9 +1,14 @@
+package net.phy;
 public class AES {
 
     String hexPlainText, hexKey;
     private boolean logging = true;
-    private final String message, key;
+    private final String message, key;  
+    private String decrypt;
 
+    public String getDecrypt() {
+        return decrypt;
+    }
     private enum Operation {
         ENCRYPTION, DECRYPTION
     }
@@ -28,8 +33,8 @@ public class AES {
         /* initial round 1 */
         int round = 1;
         addRoundKey(messageMatrix, getKeyMatrixForRound(round, keySchedule));
-        log("\nAfter Initial Round of XOR: ");
-        log(messageMatrix);
+        //log("\nAfter Initial Round of XOR: ");
+        //log(messageMatrix);
         /* looping over 10 rounds */
         for (int i = 1; i <= 10; i++) {
             ++round;
@@ -40,17 +45,17 @@ public class AES {
             }
             String[][] keyForCurrentRound = getKeyMatrixForRound(round, keySchedule);
             addRoundKey(messageMatrix, keyForCurrentRound);
-            log("\n---- Round " + (round - 1) + " ----");
-            log("Message: \t\t\t Key: ");
-            log(messageMatrix, keyForCurrentRound);
+            //log("\n---- Round " + (round - 1) + " ----");
+            //log("Message: \t\t\t Key: ");
+            //log(messageMatrix, keyForCurrentRound);
 
         }
         String encryptedMessage = matrixToText(messageMatrix);
-        log("\n\nOriginal message: " + this.message);
+        log("\nOriginal message: " + this.message);
         log("Original key: " + this.key);
         log("Message HEX: " + this.hexPlainText);
 
-        log("Final encrypted message: " + encryptedMessage);
+        //log("Final encrypted message: " + encryptedMessage);
         return encryptedMessage;
     }
 
@@ -61,9 +66,9 @@ public class AES {
         String[][] messageMatrix = createMatrix(this.hexPlainText);
         String[][] keySchedule = generateIntermediateKeys(createMatrix(this.hexKey));
 
-        log("\n\n---- Decrypting Message ----");
-        log("Received Message: " + this.hexPlainText);
-        log("Key: " + this.hexKey);
+        //log("\n\n---- Decrypting Message ----");
+        //log("Received Message: " + this.hexPlainText);
+        //log("Key: " + this.hexKey);
         /* initial round 1*/
         int round = 10;
         /* inversing the round keys*/
@@ -76,17 +81,18 @@ public class AES {
             }
             invShiftRows(messageMatrix);
             invSubBytes(messageMatrix);
-            log("\n---- Round " + (round - 1) + " ----");
-            log("Message: \t\t\t\t Key: ");
-            log(messageMatrix, keyForCurrentRound);
+            //log("\n---- Round " + (round - 1) + " ----");
+            //log("Message: \t\t\t\t Key: ");
+            //log(messageMatrix, keyForCurrentRound);
             --round;
         }
-        log("\nAfter final round of XOR: ");
+        //log("\nAfter final round of XOR: ");
         addRoundKey(messageMatrix, getKeyMatrixForRound(1, keySchedule));
-        log(messageMatrix);
+        //log(messageMatrix);
         String decryptedMessage = matrixToText(messageMatrix);
         log("Decrypted Message: " + decryptedMessage);
-        log("Original Message: " + hexToString(decryptedMessage.replaceAll(" ", "")));
+        this.decrypt = hexToString(decryptedMessage.replaceAll(" ", ""));
+        log("Original Message: " + decrypt+"\n"); 
         return decryptedMessage;
     }
 
@@ -449,7 +455,7 @@ public class AES {
         }
     }
 
-    private String hexToString(String hexString) {
+    public String hexToString(String hexString) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < hexString.length(); i = i + 2) {
             char c = (char) hexToInt(hexString.substring(i, i + 2));

@@ -1,4 +1,4 @@
-
+package net.phy;
 
 public class LookupTables {
     static final char[] sBox = {
